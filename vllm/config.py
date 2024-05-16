@@ -1,3 +1,4 @@
+import os
 import enum
 import json
 from dataclasses import dataclass, field, fields
@@ -12,6 +13,7 @@ from vllm.model_executor.layers.quantization import (QUANTIZATION_METHODS,
 from vllm.model_executor.models import ModelRegistry
 from vllm.transformers_utils.config import get_config, get_hf_text_config
 from vllm.utils import get_cpu_memory, is_cpu, is_hip, is_neuron
+from vllm.envs import VLLM_USE_MODELSCOPE
 
 GPTQMarlinConfig = get_quantization_config("gptq_marlin")
 
@@ -118,8 +120,17 @@ class ModelConfig:
         self.max_logprobs = max_logprobs
         self.skip_tokenizer_init = skip_tokenizer_init
 
+        if VLLM_USE_MODELSCOPE:
+            from modelscope.hub.snapshot_download import snapshot_download
+            if not os.path.exists(model):
+                model_path = snapshot_download(model_id=model, revision=revision)
+            else:
+                model_path = model
+            self.model = model_path
+            self.tokenizer = model_path
+            self.download_dir = model_path
         self.hf_config = get_config(self.model, trust_remote_code, revision,
-                                    code_revision)
+                                        code_revision)
         self.hf_text_config = get_hf_text_config(self.hf_config)
         self.dtype = _get_and_verify_dtype(self.hf_text_config, dtype)
         self.max_model_len = _get_and_verify_max_len(self.hf_text_config,
