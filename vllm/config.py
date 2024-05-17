@@ -123,14 +123,15 @@ class ModelConfig:
         if VLLM_USE_MODELSCOPE:
             from modelscope.hub.snapshot_download import snapshot_download
             if not os.path.exists(model):
-                model_path = snapshot_download(model_id=model, revision=revision)
+                model_path = snapshot_download(model_id=model,
+                                               revision=revision)
             else:
                 model_path = model
             self.model = model_path
             self.tokenizer = model_path
             self.download_dir = model_path
         self.hf_config = get_config(self.model, trust_remote_code, revision,
-                                        code_revision)
+                                    code_revision)
         self.hf_text_config = get_hf_text_config(self.hf_config)
         self.dtype = _get_and_verify_dtype(self.hf_text_config, dtype)
         self.max_model_len = _get_and_verify_max_len(self.hf_text_config,
