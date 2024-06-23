@@ -9,6 +9,7 @@ on:
 env:
   ALIYUN_REGISTRY_USER: 1090179900@qq.com
   ALIYUN_REGISTRY_PASSWORD: "${{ secrets.ALIYUN_REGISTRY_PASSWORD }}"
+  DOCKER_REGISTRY_PASSWORD: "${{ secrets.DOCKER_REGISTRY_PASSWORD }}"
   TAG: vllm-openai:0.4.2-deepseek
 
 jobs:
@@ -20,12 +21,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag $TAG
+      # run: docker build . --file Dockerfile --tag $TAG
 
     - name: push image to ACR EE
       run:
         docker login -u $ALIYUN_REGISTRY_USER -p $ALIYUN_REGISTRY_PASSWORD registry.cn-shenzhen.aliyuncs.com
-        docker tag vllm-openai:0.4.2-openai registry.cn-shenzhen.aliyuncs.com/docker-mirror2/$TAG
-        docker push registry.cn-shenzhen.aliyuncs.com/docker-mirror2/$TAG
+        docker pull registry.cn-shenzhen.aliyuncs.com/docker-mirror2/$TAG
+        docker tag registry.cn-shenzhen.aliyuncs.com/docker-mirror2/$TAG liuzhenghua66/$TAG
+        docker login -u liuzhenghua66 -p $DOCKER_REGISTRY_PASSWORD
+        docker push liuzhenghua66/$TAG
 
         echo "pushed done registry.cn-shenzhen.aliyuncs.com/docker-mirror2/$TAG"
