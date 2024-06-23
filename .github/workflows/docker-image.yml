@@ -23,11 +23,11 @@ jobs:
       uses: actions/checkout@v4
 
     - name: push image to ACR EE
-      run:
+      run: |
         docker login -u $ALIYUN_REGISTRY_USER -p $ALIYUN_REGISTRY_PASSWORD registry.cn-shenzhen.aliyuncs.com
         docker pull registry.cn-shenzhen.aliyuncs.com/docker-mirror2/$TAG
         docker tag registry.cn-shenzhen.aliyuncs.com/docker-mirror2/$TAG liuzhenghua66/$TAG
         docker login -u liuzhenghua66 -p $DOCKER_REGISTRY_PASSWORD
         docker push liuzhenghua66/$TAG
 
-        echo "pushed done registry.cn-shenzhen.aliyuncs.com/docker-mirror2/$TAG"
+        echo "pushed done liuzhenghua66/$TAG"
